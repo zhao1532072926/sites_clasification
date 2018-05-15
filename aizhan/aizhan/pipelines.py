@@ -28,17 +28,7 @@ class AizhanPipeline(object):
             coll.insert(data)
 
         if spider.name == 'aizhanSitesInfo':
-            # sites_coll = self.client.site.sites
-            # data = {key:item[key] for key in item}
-            # try:
-            #     sites_coll.insert(data)
-            #     # 更新记录集合
-            #     dt = datetime.now().strftime("%Y-%m-%d %H")
-            #     self.client.site.num_log.update({'datetime': dt}, {'$inc': {'sites_verified_num': 1}}, upsert=True)
-            #     self.client.site.num_log.update({'datetime': dt}, {'$inc': {'sites_verifing_num': -1}}, upsert=True)
-            # except Exception as e:
-            #     data['err'] = str(e)
-            #     self.site.err.insert(data)
+
             aizhan_sites_coll = self.client.site.aizhan_sites
             keys = ['url','keywords','description','title','labels']
             data = {key: item[key] for key in item}
