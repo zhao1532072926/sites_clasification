@@ -90,4 +90,4 @@ ITEM_PIPELINES = {
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 MONGODB_URL = 'mongodb://root:19950113@10.245.146.249:27017/'
 
-# LOG_LEVEL = 'WARNING'
+LOG_LEVEL = 'WARNING'
