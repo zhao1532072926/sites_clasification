@@ -19,29 +19,20 @@ class siteInfoSpider(scrapy.Spider):
 
     def start_requests(self):
         with MongoClient(self.MONGODB_URL) as client:
-            sites_unverified_coll = client.site.aizhan_sites1
-            sites = sites_unverified_coll.find({})
+            sites_unverified_coll = client.site.sites_unverified
+            sites = sites_unverified_coll.find_one_and_delete({})
 
-            for site in sites:
-                url = 'http://' + site['url']
+            while sites:
+                # cursor.execute(update_sql,(result['id']))
+                # 更新记录集合
+                dt = datetime.now().strftime("%Y-%m-%d %H")
+                client.site.num_log.update({'datetime': dt}, {'$inc': {'sites_unverified_num': -1}}, upsert=True)
+                client.site.num_log.update({'datetime': dt}, {'$inc': {'sites_verifing_num': 1}}, upsert=True)
+
+                url = 'http://' + sites['url']
                 request = scrapy.Request(url,callback=self.parse)
                 yield request
-    # def start_requests(self):
-    #     with MongoClient(self.MONGODB_URL) as client:
-    #         sites_unverified_coll = client.site.sites_unverified
-    #         sites = sites_unverified_coll.find_one_and_delete({})
-    #
-    #         while sites:
-    #             # cursor.execute(update_sql,(result['id']))
-    #             # 更新记录集合
-    #             dt = datetime.now().strftime("%Y-%m-%d %H")
-    #             client.site.num_log.update({'datetime': dt}, {'$inc': {'sites_unverified_num': -1}}, upsert=True)
-    #             client.site.num_log.update({'datetime': dt}, {'$inc': {'sites_verifing_num': 1}}, upsert=True)
-    #
-    #             url = 'http://' + sites['url']
-    #             request = scrapy.Request(url,callback=self.parse)
-    #             yield request
-    #             sites = sites_unverified_coll.find_one_and_delete({})
+                sites = sites_unverified_coll.find_one_and_delete({})
 
     def get_keywords(self,response, sites_info):
         """

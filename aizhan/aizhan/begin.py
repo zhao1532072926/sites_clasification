@@ -1,3 +1,3 @@
 from scrapy import cmdline
 
-cmdline.execute("scrapy crawl aizhan_sites".split())
+cmdline.execute("scrapy crawl aizhanSitesInfo".split())
