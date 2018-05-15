@@ -39,7 +39,7 @@ class AizhanPipeline(object):
             # except Exception as e:
             #     data['err'] = str(e)
             #     self.site.err.insert(data)
-            aizhan_sites_coll = self.client.site.aizhan_sites1
+            aizhan_sites_coll = self.client.site.aizhan_sites
             keys = ['url','keywords','description','title','labels']
             data = {key: item[key] for key in item}
             aizhan_sites_coll.update({'url':data['url']},{'$set':data},upsert=True)
