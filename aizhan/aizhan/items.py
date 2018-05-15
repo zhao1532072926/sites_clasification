@@ -11,6 +11,7 @@ import scrapy
 class AizhanItem(scrapy.Item):
     # define the fields for your item here like:
     # name = scrapy.Field()
+    id = scrapy.Field()
     url = scrapy.Field()
     category = scrapy.Field()
     sub_category = scrapy.Field()
@@ -21,6 +22,6 @@ class AizhanItem(scrapy.Item):
     labels = scrapy.Field()
     labels_tf = scrapy.Field()
 
-    pr = scrapy.Field()
+    pagerank = scrapy.Field()
     baidurank = scrapy.Field()
     alexa_ranking = scrapy.Field()
