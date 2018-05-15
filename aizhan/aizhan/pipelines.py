@@ -24,7 +24,7 @@ class AizhanPipeline(object):
         if spider.name == 'aizhan_sites':
             data = {key:item[key] for key in item}
             data['gettime'] = datetime.now()
-            coll = self.client.site.aizhan_sites2
+            coll = self.client.site.aizhan_sites
             coll.insert(data)
 
         if spider.name == 'aizhanSitesInfo':
