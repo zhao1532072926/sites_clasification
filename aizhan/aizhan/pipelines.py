@@ -32,6 +32,7 @@ class AizhanPipeline(object):
             aizhan_sites_coll = self.client.site.aizhan_sites
             keys = ['url','keywords','description','title','labels']
             data = {key: item[key] for key in item}
+            data['info_flag'] = 1
             aizhan_sites_coll.update({'url':data['url']},{'$set':data},upsert=True)
 
 
