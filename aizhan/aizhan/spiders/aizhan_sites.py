@@ -151,6 +151,6 @@ class siteSpider(scrapy.Spider):
         next_page = response.css('body > div.wlist > div > div:nth-child(3) > div.fl > div.page > ul > li.on + li >a::attr(href)').extract_first()
         if next_page:
             next_page = 'https://top.aizhan.com'+next_page
-            yield scrapy.Request(next_page,callback=self.parse)
+            yield scrapy.Request(next_page,callback=self.parse_data)
 
 
