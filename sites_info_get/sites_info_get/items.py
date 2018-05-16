@@ -11,12 +11,13 @@ import scrapy
 class SitesInfoGetItem(scrapy.Item):
     # define the fields for your item here like:
     # name = scrapy.Field()
-    _id = scrapy.Field()
+    id = scrapy.Field()
     url = scrapy.Field()
     title = scrapy.Field()
     keywords = scrapy.Field()
     description = scrapy.Field()
-    baidurank = scrapy.Field()
-    pagerank = scrapy.Field()
-    alexa_ranking = scrapy.Field()
+
+    baidu_rank = scrapy.Field()
+    page_rank = scrapy.Field()
+    alexa_rank = scrapy.Field()
     labels = scrapy.Field()

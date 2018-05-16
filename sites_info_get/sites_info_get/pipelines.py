@@ -34,10 +34,11 @@ class SitesInfoGetPipeline(object):
                 data['err'] = str(e)
                 self.site.err.insert(data)
 
-        if spider.name == 'seoInfo':
+        elif spider.name == 'seoInfo':
             sites_coll = self.client.site.sites
             data = {key:item[key] for key in item}
-            id = data.pop('_id')
-            sites_coll.update_one(filter={'_id':id},update=data)
+            data['seo_flag'] = 1
+            id = data.pop('id')
+            sites_coll.update_one(filter={'_id':id},update={'$set':data})
 
         return item
