@@ -28,7 +28,6 @@ class AizhanPipeline(object):
             coll.insert(data)
 
         elif spider.name == 'aizhanSitesInfo':
-
             aizhan_sites_coll = self.client.site.aizhan_sites
             keys = ['url','keywords','description','title','labels']
             data = {key: item[key] for key in item}
