@@ -84,10 +84,10 @@ class aizhanSitesInfoSpider(scrapy.Spider):
         item['title'] = title.strip() if title else None
         head= response.xpath('/html/head').extract_first()
         keywords_element = re.findall(re.compile("""<meta[^<>]*?['"]keywords['"][^<>]*?>""",re.I),head)
-        if keywords_element:
+        if keywords_element and re.findall(re.compile("""<meta[^<>]*?content="(.*?)"[^<>]*?>""",re.I),keywords_element[0]):
             item['keywords'] = re.findall(re.compile("""<meta[^<>]*?content="(.*?)"[^<>]*?>""",re.I),keywords_element[0])[0]
         description_element = re.findall(re.compile("""<meta[^<>]*?name=.description[^<>]*?>""",re.I),head)
-        if description_element:
+        if description_element and re.findall(re.compile("""<meta[^<>]*?content="(.*?)"[^<>]*?>""",re.I),description_element[0]):
             item['description'] = re.findall(re.compile("""<meta[^<>]*?content="(.*?)"[^<>]*?>""",re.I),description_element[0])[0]
         labels = aizhanSitesInfoSpider.get_keywords(response,item)
         labels_tf = aizhanSitesInfoSpider.get_keywords(response,item,tf_idf=False)

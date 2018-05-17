@@ -42,6 +42,10 @@ def categorys_sites_count(goal_coll,memory_coll):
 
 
 def aizhan_categorys_sites_count():
+    """
+    爱站网信息（aizhan_sites）统计
+    :return:
+    """
     MONGODB_URL = 'mongodb://root:19950113@10.245.146.249:27017/'
     client = MongoClient(MONGODB_URL)
     goal_coll = client.site.aizhan_sites
