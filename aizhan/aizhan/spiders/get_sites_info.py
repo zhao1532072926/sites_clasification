@@ -21,13 +21,13 @@ class aizhanSitesInfoSpider(scrapy.Spider):
     def start_requests(self):
         with MongoClient(self.MONGODB_URL) as client:
             aizhan_sites_coll = client.site.aizhan_sites
-            site = aizhan_sites_coll.find_one_and_update({'info_flag':0},update={'$set':{'info_flag':0.1}})
+            site = aizhan_sites_coll.find_one_and_update({'info_flag':0.1},update={'$set':{'info_flag':0.2}})
 
             while site:
                 url = 'http://' + site['url']
                 request = scrapy.Request(url,callback=self.parse)
                 yield request
-                site = aizhan_sites_coll.find_one_and_update({'info_flag':0},update={'$set':{'info_flag':0.1}})
+                site = aizhan_sites_coll.find_one_and_update({'info_flag':0.1},update={'$set':{'info_flag':0.2}})
 
     @staticmethod
     def get_keywords(response, sites_info, n=10, tf_idf=True):
