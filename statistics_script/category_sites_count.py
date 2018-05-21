@@ -15,7 +15,7 @@ def categorys_sites_count(goal_coll,memory_coll):
     """
 
     categorys_counts = {'category_info_err_sites':0}
-    for site in goal_coll.find():
+    for site in goal_coll.find({'info_flag':1}):
         if not ('category'in site and 'sub_category' in site):
             categorys_counts['category_info_err_sites'] += 1
         elif site['category'] in categorys_counts:
