@@ -41,4 +41,10 @@ class AizhanPipeline(object):
             data['seo_flag'] = 1
             sites_coll.update_one(filter={'_id':id},update={'$set':data})
 
+        elif spider.name == 'aizhan_sites_detailed':
+            data = {key: item[key] for key in item}
+            data['gettime'] = datetime.now()
+            coll = self.client.site.new_aizhan_sites
+            coll.insert(data)
+
         return item

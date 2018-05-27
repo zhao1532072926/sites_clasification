@@ -25,3 +25,17 @@ class AizhanItem(scrapy.Item):
     pagerank = scrapy.Field()
     baidurank = scrapy.Field()
     alexa_ranking = scrapy.Field()
+
+class AizhanDetailedItem(scrapy.Item):
+    title = scrapy.Field()
+    alias = scrapy.Field()
+    url = scrapy.Field()
+    category = scrapy.Field()
+    area = scrapy.Field()
+    keywords = scrapy.Field()
+    description = scrapy.Field()
+    detailed_description = scrapy.Field()
+    score = scrapy.Field()
+    alexa_rank = scrapy.Field()
+    page_rank = scrapy.Field()
+    baidu_rank = scrapy.Field()
