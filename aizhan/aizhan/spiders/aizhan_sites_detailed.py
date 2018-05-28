@@ -6,9 +6,12 @@ create-date: (5/27/18)
 import os
 import scrapy
 import logging
+from pymongo import MongoClient
+from scrapy.utils.project import get_project_settings
 from aizhan.items import AizhanDetailedItem
 
 
+MONGODB_URL = get_project_settings()['MONGODB_URL']
 
 class siteSpider(scrapy.Spider):
     name = "aizhan_sites_detailed"
@@ -27,16 +30,19 @@ class siteSpider(scrapy.Spider):
     def parse_list(self, response):
 
         try:
-            for site in response.xpath('/html/body/div[3]/div/div[3]/div[1]/div[2]/div/ul/li/div[2]'):
-                rank = {}
-                rank['alexa_rank'] = site.xpath('//div/span[1]/text()').extract_first()
-                rank['page_rank'] = site.xpath('//div/span[2]/a/text()').extract_first()
-                rank['baidu_rank'] = site.xpath('//div/span[3]/text()').extract_first()
+            with MongoClient(MONGODB_URL) as client:
+                for site in response.xpath('/html/body/div[3]/div/div[3]/div[1]/div[2]/div/ul/li/div[2]'):
+                    site_url = site.xpath('//h2/a/@href').extract_first()
+                    if client.site.new_aizhan_sites.find_one({'url':site_url}):
+                        continue
+                    rank = {}
+                    rank['alexa_rank'] = site.xpath('//div/span[1]/text()').extract_first()
+                    rank['page_rank'] = site.xpath('//div/span[2]/a/text()').extract_first()
+                    rank['baidu_rank'] = site.xpath('//div/span[3]/text()').extract_first()
 
-                site_url = site.xpath('//h2/a/@href').extract_first()
-                request = scrapy.Request(site_url, callback=self.parse_data)
-                request.meta['rank'] = rank
-                yield request
+                    request = scrapy.Request(site_url, callback=self.parse_data)
+                    request.meta['rank'] = rank
+                    yield request
         except Exception as e:
             print(e)
 
