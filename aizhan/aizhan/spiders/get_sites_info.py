@@ -20,14 +20,15 @@ class aizhanSitesInfoSpider(scrapy.Spider):
 
     def start_requests(self):
         with MongoClient(self.MONGODB_URL) as client:
-            aizhan_sites_coll = client.site.aizhan_sites
-            site = aizhan_sites_coll.find_one_and_update({'info_flag':0.1},update={'$set':{'info_flag':0.2}})
+            aizhan_sites_coll = client.site.detailed_aizhan_sites
+            site = aizhan_sites_coll.find_one_and_update({'info_flag':None},update={'$set':{'info_flag':0}})
 
             while site:
                 url = 'http://' + site['url']
                 request = scrapy.Request(url,callback=self.parse)
+                request.meta['_id'] = site['_id']
                 yield request
-                site = aizhan_sites_coll.find_one_and_update({'info_flag':0.1},update={'$set':{'info_flag':0.2}})
+                site = aizhan_sites_coll.find_one_and_update({'info_flag':None},update={'$set':{'info_flag':0}})
 
     @staticmethod
     def get_keywords(response, sites_info, n=10, tf_idf=True):
@@ -41,7 +42,7 @@ class aizhanSitesInfoSpider(scrapy.Spider):
         :return: labels-提取到的关键词
         """
         info = []
-        for key in ['keywrds','description']:
+        for key in ['real_title','real_keywrds','real_description']:
             if key in sites_info:
                 info.append(sites_info[key])
         if not tf_idf and 'keywords' in sites_info:  #如果存在keywords标签或description标签，则用标签内容提取关键词
@@ -74,27 +75,29 @@ class aizhanSitesInfoSpider(scrapy.Spider):
 
 
     def parse(self, response):
-        from aizhan.items import AizhanItem
+        from aizhan.items import AizhanDetailedItem
 
-        item = AizhanItem()
+        item = AizhanDetailedItem()
+        item['_id'] = response.meta['_id']
         item['url'] = response.url.split('/')[2]
 
 
         title = response.xpath('/html/head/title/text()').extract_first()
-        item['title'] = title.strip() if title else None
+        item['real_title'] = title.strip() if title else None
         head= response.xpath('/html/head').extract_first()
         keywords_element = re.findall(re.compile("""<meta[^<>]*?['"]keywords['"][^<>]*?>""",re.I),head)
         if keywords_element and re.findall(re.compile("""<meta[^<>]*?content="(.*?)"[^<>]*?>""",re.I),keywords_element[0]):
-            item['keywords'] = re.findall(re.compile("""<meta[^<>]*?content="(.*?)"[^<>]*?>""",re.I),keywords_element[0])[0]
+            item['real_keywords'] = re.findall(re.compile("""<meta[^<>]*?content="(.*?)"[^<>]*?>""",re.I),keywords_element[0])[0]
         description_element = re.findall(re.compile("""<meta[^<>]*?name=.description[^<>]*?>""",re.I),head)
         if description_element and re.findall(re.compile("""<meta[^<>]*?content="(.*?)"[^<>]*?>""",re.I),description_element[0]):
-            item['description'] = re.findall(re.compile("""<meta[^<>]*?content="(.*?)"[^<>]*?>""",re.I),description_element[0])[0]
+            item['real_description'] = re.findall(re.compile("""<meta[^<>]*?content="(.*?)"[^<>]*?>""",re.I),description_element[0])[0]
         labels = aizhanSitesInfoSpider.get_keywords(response,item)
-        labels_tf = aizhanSitesInfoSpider.get_keywords(response,item,tf_idf=False)
         if labels:
             item['labels'] = labels
-        if labels_tf:
-            item['labels_tf'] = labels_tf
+
+        # labels_tf = aizhanSitesInfoSpider.get_keywords(response, item, tf_idf=False)
+        # if labels_tf:
+        #     item['labels_tf'] = labels_tf
 
         yield item
 

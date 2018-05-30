@@ -19,7 +19,7 @@ NEWSPIDER_MODULE = 'aizhan.spiders'
 USER_AGENT = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 "
 
 # Obey robots.txt rules
-ROBOTSTXT_OBEY = True
+ROBOTSTXT_OBEY = False
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
@@ -90,4 +90,4 @@ ITEM_PIPELINES = {
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 MONGODB_URL = 'mongodb://root:19950113@10.245.146.249:27017/'
 
-LOG_LEVEL = 'INFO'
+# LOG_LEVEL = 'INFO'

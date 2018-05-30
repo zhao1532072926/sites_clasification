@@ -28,11 +28,10 @@ class AizhanPipeline(object):
             coll.insert(data)
 
         elif spider.name == 'aizhanSitesInfo':
-            aizhan_sites_coll = self.client.site.aizhan_sites
-            keys = ['url','keywords','description','title','labels']
+            aizhan_sites_coll = self.client.site.detailed_aizhan_sites
             data = {key: item[key] for key in item}
             data['info_flag'] = 1
-            aizhan_sites_coll.update({'url':data['url']},{'$set':data},upsert=True)
+            aizhan_sites_coll.update({'_id':item['_id']},{'$set':data},upsert=True)
 
         elif spider.name == 'aizhanSeoInfo':
             sites_coll = self.client.site.aizhan_sites
@@ -41,10 +40,18 @@ class AizhanPipeline(object):
             data['seo_flag'] = 1
             sites_coll.update_one(filter={'_id':id},update={'$set':data})
 
-        elif spider.name == 'aizhan_sites_detailed':
+        elif spider.name == 'aizhan_sites_detailed_manager':
             data = {key: item[key] for key in item}
             data['gettime'] = datetime.now()
-            coll = self.client.site.new_aizhan_sites
+            coll = self.client.site.detailed_aizhan_sites_fpage
             coll.insert(data)
+
+        elif spider.name == 'aizhan_sites_detailed_worker':
+            data = {key: item[key] for key in item}
+            data['gettime'] = datetime.now()
+            id = data.pop('_id')
+            data['aizhan_info_flag'] = 1
+            coll = self.client.site.detailed_aizhan_sites
+            coll.update_one({'_id':id},update={'$set':data})
 
         return item
