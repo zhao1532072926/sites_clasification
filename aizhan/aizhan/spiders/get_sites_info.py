@@ -16,7 +16,7 @@ class aizhanSitesInfoSpider(scrapy.Spider):
 
     name = "aizhanSitesInfo"
 
-
+    # start_urls = ['http://www.ahedu.cn',]
 
     def start_requests(self):
         with MongoClient(self.MONGODB_URL) as client:
@@ -43,7 +43,7 @@ class aizhanSitesInfoSpider(scrapy.Spider):
         """
         info = []
         for key in ['real_title','real_keywrds','real_description']:
-            if key in sites_info:
+            if key in sites_info and sites_info[key]:
                 info.append(sites_info[key])
         if not tf_idf and 'keywords' in sites_info:  #如果存在keywords标签或description标签，则用标签内容提取关键词
             cut_results = posseg.cut(';'.join(info))
@@ -63,8 +63,10 @@ class aizhanSitesInfoSpider(scrapy.Spider):
             keywords = jieba.analyse.extract_tags(';'.join(info), topK=n, withWeight=True, allowPOS=['n'])
 
         else:
-            body = response.xpath('/html/body')[0]
-            body_text = body.xpath('string(.)').extract_first()
+            body = response.xpath('/html/body')
+            if not body:
+                return []
+            body_text = body[0].xpath('string(.)').extract_first()
             keywords = jieba.analyse.extract_tags(body_text, topK=n, withWeight=True)
         labels = []
         for x in keywords:
@@ -85,12 +87,13 @@ class aizhanSitesInfoSpider(scrapy.Spider):
         title = response.xpath('/html/head/title/text()').extract_first()
         item['real_title'] = title.strip() if title else None
         head= response.xpath('/html/head').extract_first()
-        keywords_element = re.findall(re.compile("""<meta[^<>]*?['"]keywords['"][^<>]*?>""",re.I),head)
-        if keywords_element and re.findall(re.compile("""<meta[^<>]*?content="(.*?)"[^<>]*?>""",re.I),keywords_element[0]):
-            item['real_keywords'] = re.findall(re.compile("""<meta[^<>]*?content="(.*?)"[^<>]*?>""",re.I),keywords_element[0])[0]
-        description_element = re.findall(re.compile("""<meta[^<>]*?name=.description[^<>]*?>""",re.I),head)
-        if description_element and re.findall(re.compile("""<meta[^<>]*?content="(.*?)"[^<>]*?>""",re.I),description_element[0]):
-            item['real_description'] = re.findall(re.compile("""<meta[^<>]*?content="(.*?)"[^<>]*?>""",re.I),description_element[0])[0]
+        if head:
+            keywords_element = re.findall(re.compile("""<meta[^<>]*?['"]keywords['"][^<>]*?>""",re.I),head)
+            if keywords_element and re.findall(re.compile("""<meta[^<>]*?content="(.*?)"[^<>]*?>""",re.I),keywords_element[0]):
+                item['real_keywords'] = re.findall(re.compile("""<meta[^<>]*?content="(.*?)"[^<>]*?>""",re.I),keywords_element[0])[0]
+            description_element = re.findall(re.compile("""<meta[^<>]*?name=.description[^<>]*?>""",re.I),head)
+            if description_element and re.findall(re.compile("""<meta[^<>]*?content="(.*?)"[^<>]*?>""",re.I),description_element[0]):
+                item['real_description'] = re.findall(re.compile("""<meta[^<>]*?content="(.*?)"[^<>]*?>""",re.I),description_element[0])[0]
         labels = aizhanSitesInfoSpider.get_keywords(response,item)
         if labels:
             item['labels'] = labels
