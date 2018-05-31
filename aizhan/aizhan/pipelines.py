@@ -34,9 +34,9 @@ class AizhanPipeline(object):
             aizhan_sites_coll.update({'_id':item['_id']},{'$set':data},upsert=True)
 
         elif spider.name == 'aizhanSeoInfo':
-            sites_coll = self.client.site.aizhan_sites
+            sites_coll = self.client.site.detailed_aizhan_sites
             data = {key:item[key] for key in item}
-            id = data.pop('id')
+            id = data.pop('_id')
             data['seo_flag'] = 1
             sites_coll.update_one(filter={'_id':id},update={'$set':data})
 
